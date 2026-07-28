@@ -36,7 +36,13 @@ Le modèle périmétrique traditionnel repose sur un principe simple : *ce qui e
 Environnement entièrement virtualisé sous **VirtualBox**, **3 VM Debian 13** interconnectées sur un **réseau interne isolé** (192.168.50.0/24) :
 
 ​```
-   Réseau interne VirtualBox « lan-entreprise » (192.168.50.0/24) ┌──────────────┐ ┌───────────────────────┐ ┌───────────────────┐ │ vm-client │───▶│ vm-securite │───▶│ vm-serveur │ │ 192.168.50.10│ │ 192.168.50.30 │ │ 192.168.50.20 │ │ (Debian 13) │ │ Serveur OpenVPN │ │ nginx (intranet) │ └──────────────┘ │ Tunnel 10.8.0.0/24 │ └───────────────────┘ └───────────────────────┘ 
+    Réseau interne VirtualBox « lan-entreprise » (192.168.50.0/24)
+   ┌──────────────┐    ┌───────────────────────┐    ┌───────────────────┐
+   │  vm-client   │───▶│    vm-securite        │───▶│    vm-serveur     │
+   │ 192.168.50.10│    │  192.168.50.30        │    │  192.168.50.20    │
+   │  (Debian 13) │    │  Serveur OpenVPN      │    │  nginx (intranet) │
+   └──────────────┘    │  Tunnel 10.8.0.0/24   │    └───────────────────┘
+                       └───────────────────────┘
 ​```
 
 | VM | IP | Rôle |
@@ -86,7 +92,14 @@ Environnement entièrement virtualisé sous **VirtualBox**, **3 VM Debian 13** i
 
 **Surface d'attaque de la passerelle VPN**
 ​```
-bash $ sudo nmap -sU -p 1194 192.168.50.30 PORT STATE SERVICE 1194/udp open|filtered openvpn # Service identifiable nativement par nmap $ sudo nmap -sS -p 1-1000 192.168.50.30 PORT STATE SERVICE 22/tcp open ssh # Administration également exposée
+bash
+$ sudo nmap -sU -p 1194 192.168.50.30
+PORT     STATE         SERVICE
+1194/udp open|filtered openvpn      # Service identifiable nativement par nmap
+
+$ sudo nmap -sS -p 1-1000 192.168.50.30
+PORT   STATE SERVICE
+22/tcp open  ssh                    # Administration également exposée
 
 ​```
 
@@ -94,7 +107,16 @@ bash $ sudo nmap -sU -p 1194 192.168.50.30 PORT STATE SERVICE 1194/udp open|filt
 
 **Déplacement latéral depuis le client compromis**
 ​```
-bash $ sudo nmap -sn 192.168.50.0/24 # Depuis vm-client, tunnel actif Nmap scan report for 192.168.50.10 # Découverte Nmap scan report for 192.168.50.20 # Découverte Nmap scan report for 192.168.50.30 # Découverte $ sudo nmap -sS -p 1-1000 192.168.50.20 PORT STATE SERVICE 22/tcp open ssh # Service atteignable 80/tcp open http # Service atteignable
+bash
+$ sudo nmap -sn 192.168.50.0/24        # Depuis vm-client, tunnel actif
+Nmap scan report for 192.168.50.10     # Découverte
+Nmap scan report for 192.168.50.20     # Découverte
+Nmap scan report for 192.168.50.30     # Découverte
+
+$ sudo nmap -sS -p 1-1000 192.168.50.20
+PORT   STATE SERVICE
+22/tcp open  ssh                        # Service atteignable
+80/tcp open  http                       # Service atteignable
 
 ​```
 
