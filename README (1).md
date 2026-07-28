@@ -32,7 +32,7 @@ Le modèle périmétrique traditionnel repose sur un principe simple : *ce qui e
 
 ## Architecture du banc d'essai
 
-![Schéma du banc d'essai](docs/schemas/schema-banc-essai.png)
+![Schéma du banc d'essai](schemas/schema-banc-essai.png)
 
 Environnement entièrement virtualisé sous **VirtualBox**, **3 VM Debian 13** interconnectées sur un **réseau interne isolé** (192.168.50.0/24) :
 
