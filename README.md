@@ -31,18 +31,12 @@ Le modèle périmétrique traditionnel repose sur un principe simple : *ce qui e
 
 ## Architecture du banc d'essai
 
-![Schéma du banc d'essai](docs/schemas/Schéma fonctionnel de VPN vs ZTNA.png)
+![Schéma du banc d'essai](docs/schemas/Schéma_banc_d_essai.png)
 
 Environnement entièrement virtualisé sous **VirtualBox**, **3 VM Debian 13** interconnectées sur un **réseau interne isolé** (192.168.50.0/24) :
 
 ​```
-        Réseau interne VirtualBox « lan-entreprise » (192.168.50.0/24)
-   ┌──────────────┐    ┌───────────────────────┐    ┌───────────────────┐
-   │  vm-client   │───▶│    vm-securite        │───▶│    vm-serveur     │
-   │ 192.168.50.10│    │  192.168.50.30        │    │  192.168.50.20    │
-   │  (Debian 13) │    │  Serveur OpenVPN      │    │  nginx (intranet) │
-   └──────────────┘    │  Tunnel 10.8.0.0/24   │    └───────────────────┘
-                       └───────────────────────┘
+   Réseau interne VirtualBox « lan-entreprise » (192.168.50.0/24) ┌──────────────┐ ┌───────────────────────┐ ┌───────────────────┐ │ vm-client │───▶│ vm-securite │───▶│ vm-serveur │ │ 192.168.50.10│ │ 192.168.50.30 │ │ 192.168.50.20 │ │ (Debian 13) │ │ Serveur OpenVPN │ │ nginx (intranet) │ └──────────────┘ │ Tunnel 10.8.0.0/24 │ └───────────────────┘ └───────────────────────┘ 
 ​```
 
 | VM | IP | Rôle |
@@ -92,28 +86,16 @@ Environnement entièrement virtualisé sous **VirtualBox**, **3 VM Debian 13** i
 
 **Surface d'attaque de la passerelle VPN**
 ​```
-$ sudo nmap -sU -p 1194 192.168.50.30
-PORT     STATE         SERVICE
-1194/udp open|filtered openvpn      ← Service identifiable nativement par nmap
+bash $ sudo nmap -sU -p 1194 192.168.50.30 PORT STATE SERVICE 1194/udp open|filtered openvpn # Service identifiable nativement par nmap $ sudo nmap -sS -p 1-1000 192.168.50.30 PORT STATE SERVICE 22/tcp open ssh # Administration également exposée
 
-$ sudo nmap -sS -p 1-1000 192.168.50.30
-PORT   STATE SERVICE
-22/tcp open  ssh                    ← Administration également exposée
 ​```
 
 → **2 ports exposés**, dont le service OpenVPN **directement identifiable** par signature. Cela ouvre la voie à la recherche de CVE spécifiques (ex. CVE-2018-7544, CVE-2018-9336) et aux tentatives de brute-force ciblées.
 
 **Déplacement latéral depuis le client compromis**
 ​```
-$ sudo nmap -sn 192.168.50.0/24        # Depuis vm-client, tunnel actif
-Nmap scan report for 192.168.50.10     ← Découverte
-Nmap scan report for 192.168.50.20     ← Découverte
-Nmap scan report for 192.168.50.30     ← Découverte
+bash $ sudo nmap -sn 192.168.50.0/24 # Depuis vm-client, tunnel actif Nmap scan report for 192.168.50.10 # Découverte Nmap scan report for 192.168.50.20 # Découverte Nmap scan report for 192.168.50.30 # Découverte $ sudo nmap -sS -p 1-1000 192.168.50.20 PORT STATE SERVICE 22/tcp open ssh # Service atteignable 80/tcp open http # Service atteignable
 
-$ sudo nmap -sS -p 1-1000 192.168.50.20
-PORT   STATE SERVICE
-22/tcp open  ssh                        ← Service atteignable
-80/tcp open  http                       ← Service atteignable
 ​```
 
 → **Cartographie complète du réseau interne** obtenue depuis le client authentifié. Services SSH et HTTP directement atteignables sur la ressource cible. Un attaquant ayant compromis les identifiants VPN d'un utilisateur légitime disposerait donc d'une **visibilité totale** et pourrait tenter des attaques applicatives (injection HTTP, brute-force SSH).
