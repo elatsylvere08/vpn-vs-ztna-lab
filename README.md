@@ -120,7 +120,7 @@ La deuxième phase du projet, planifiée à la suite, consiste à déployer une 
 
 ## Livrables
 
-- 📄 [Rapport scientifique](docs/rapport.pdf) (~50 pages) — méthodologie ADS complète
+- 📄 [Rapport scientifique](docs/rapport.pdf) (~50 pages) — méthodologie ADS complète 
 - 🖼️ [Poster de soutenance](docs/poster.pdf) — restitution visuelle des enjeux et résultats
 - 🎤 Soutenance orale — 3 min + Q/R + 10 min de questions/réponses avec vulgarisation adaptée à un public non spécialiste
 
