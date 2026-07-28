@@ -1,5 +1,10 @@
 # VPN vs ZTNA — Étude comparative des modèles d'accès distant
 
+![Debian](https://img.shields.io/badge/Debian-13-red?logo=debian)
+![OpenVPN](https://img.shields.io/badge/OpenVPN-2.6-orange)
+![NIST](https://img.shields.io/badge/NIST-SP%20800--207-blue)
+![Status](https://img.shields.io/badge/status-Phase%201%20terminée-green)
+
 > Banc d'essai expérimental démontrant les limites du modèle périmétrique (VPN) face à une approche **Zero Trust Network Access**, évalué selon le **NIST SP 800-207** et le **CISA Zero Trust Maturity Model**.
 
 **Projet ADS — CESI École d'Ingénieurs (La Rochelle) · Cycle ingénieur M1 · 2026**
